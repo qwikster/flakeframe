@@ -58,4 +58,24 @@ def parse_lat_long(input_str):
     # DDM also exists but am too lazy to integrate
     # Consider what3words support?
     return None, None
+
+def geocode_location(location):
+    # geocode = find lat/long from location name or address
+    lat, lon = parse_lat_long(location)
+    if lat and lon:
+        return lat, lon # user already entered coords
     
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {"q": location, "format": "json", "limit": "1"}
+    headers = {"User-Agent": "mapfisher/1.0"}
+    try:
+        response = requests.get(url, params=params, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            if data:
+                return float(data[0]["lat"]), float(data[0]["lon"])
+            
+    except Exception: # user very doopid
+        pass
+    
+    return None, None # user doopid
