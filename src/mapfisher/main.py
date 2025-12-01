@@ -42,10 +42,11 @@ def entry():
                 "lon": lon
             }
             save_config(config)
-            print(lat, lon)
             break
             # TODO: weather parser go here
-    render_map(lat, lon)
+    data = render_map(lat, lon, debug = False)
+    print(data)
+    input()
 
 if __name__ == "__main__":
     entry()

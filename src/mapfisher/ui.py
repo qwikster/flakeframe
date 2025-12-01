@@ -133,20 +133,20 @@ def draw_box(lines):
     start_y = (term_height - BOX_HEIGHT) // 2
     
     sys.stdout.write(f"\x1b[{start_y};{start_x}H")
-    
     sys.stdout.write("╭" + "─" * (BOX_WIDTH - 2) + "╮\n")
     
-    ln = 0
-    for line in lines:
-        ln += 1
-        padded = line.center(BOX_WIDTH - 2)
-        sys.stdout.write(f"\x1b[{start_y + ln};{start_x}H")
-        sys.stdout.write("│" + padded + "│")
-        
-    for _ in range(BOX_HEIGHT - 2 - len(lines)):
-        sys.stdout.write("│" + " " * (BOX_WIDTH - 2) + "│\n")
-    
-    sys.stdout.write("╰" + "─" * (BOX_WIDTH - 2) + "╯\n")
+    content_height = BOX_HEIGHT - 2
+    for i in range(content_height):
+        y = start_y + 1 + i
+        if i < len(lines):
+            padded = lines[i].center(BOX_WIDTH - 2)
+            sys.stdout.write(f"\x1b[{y};{start_x}H│{padded}│")
+        else:
+            sys.stdout.write(f"\x1b[{y};{start_x}H│{" " * (BOX_WIDTH - 2)}│")
+            
+    bottom_y = start_y + BOX_HEIGHT - 1
+    sys.stdout.write(f"\x1b[{bottom_y};{start_x}H╰" + "─" * (BOX_WIDTH - 2) + "╯")
+    sys.stdout.flush()
     
 def save_config(config):
     with open(CONFIG_FILE, "w") as f:
