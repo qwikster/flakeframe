@@ -7,19 +7,66 @@ from io import BytesIO, StringIO
 import sys
 import shutil
 import time
+import re
+import select
 
-try:
-    import tkinter
-except ImportError:
-    tkinter = None
-
-def textsize(self, text, font=None):
+def textsize(self, text, font=None): # fixes a bug in PIL lol
     bbox = self.textbbox((0, 0), text, font=font)
     return bbox[2] - bbox[0], bbox[3] - bbox[1]
     
 ImageDraw.ImageDraw.textsize = textsize
 
-def render_map(lat, lon, zoom=14, width=320, height=180, debug = False, fast = False): # TODO: make dynamic/configurable later - Q/E keys?
+def get_terminal_pixels(): # doesn't work :(
+    if not sys.stdout.isatty():
+        return 1920, 1080
+    
+    old_settings = None
+    fd = sys.stdin.fileno()
+    if sys.platform != "win32":
+        import termios
+        old_settings = termios.tcgetattr(fd)
+        
+    try:
+        if sys.platform != "win32":
+            import tty
+            tty.setraw(fd)
+        
+        sys.stdout.write("\x1b[14t")
+        sys.stdout.flush()
+        
+        response = b""
+        start = time.time()
+        print("sent")
+        
+        while time.time() - start < 0.5: # this is broken
+            print("reading")
+            ready, _, _ = select.select([sys.stdin], [], [], 0.5)
+            if ready:
+                chunk = sys.stdin.buffer.read(32)
+                if not chunk:
+                    break
+                response += chunk
+                if b't' in response:
+                    break
+            else:
+                break  # Timeout
+        
+        match = re.search(r'\x1b\[4;(\d+);(\d+)t', response)
+        if match:
+            height_px = int(match.group(1))
+            width_px  = int(match.group(2))
+            return width_px, height_px
+    
+    except Exception:
+        pass
+    finally:
+        if old_settings and sys.platform != "win32":
+            import termios
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old_settings)
+    
+    return 1920, 1080 # fallback
+
+def render_map(lat, lon, zoom=14, debug = False, fast = False): # TODO: make dynamic/configurable later - Q/E keys?
     start_time = time.perf_counter()
     
     context = staticmaps.Context()
@@ -30,18 +77,25 @@ def render_map(lat, lon, zoom=14, width=320, height=180, debug = False, fast = F
     context.set_zoom(zoom)
     setup_time = time.perf_counter()
     
-    image = context.render_pillow(width, height)
+    cols, rows = shutil.get_terminal_size()
+    max_w = cols - 2
+    max_h = max(10, rows) + 4
+    base_aspect = max_w / (max_h * 2.0)
+    base_wmax = 320
+    base_hmax = 180
+    if base_aspect > 1:
+        base_w = base_wmax
+        base_h = max(60, int(base_hmax / base_aspect))
+    else:
+        base_h = base_hmax
+        base_w = max(120, int(base_wmax * base_aspect))
+    
+    image = context.render_pillow(base_w, base_h)
     maprend_time = time.perf_counter()
     
-    if tkinter:
-        root = tkinter.Tk()
-        upscale_width = root.winfo_screenwidth()
-        upscale_height = root.winfo_screenheight()
-        root.destroy()
-    else:
-        upscale_width, upscale_height = 1920, 1080 # assume size if it can't be found
+    term_w_px, term_h_px = get_terminal_pixels()
     
-    image = image.resize((upscale_width, upscale_height), resample = Image.LANCZOS)
+    image = image.resize((term_w_px, term_h_px), resample = Image.LANCZOS)
     resize_time = time.perf_counter()
 
     columns, rows = shutil.get_terminal_size()

@@ -4,7 +4,7 @@ import re
 from mapfisher.input import read_key
 from mapfisher.map import render_map
 from mapfisher.ui import clear, get_terminal_size
-from mapfisher.weather import ... # fetch and format
+# from mapfisher.weather import ... # fetch and format
 
 def display_width(s):
     # regex by ai
@@ -41,7 +41,7 @@ class MapViewUI:
         ...
         
         # controls
-        controls = "\x1b[38;5;86m< \x1b[32m[+/-]\x1b[38;5;86m zoom | \x1b[32m[r]eload \x1b[38;5;86m| \x1b[32m[esc/q]\x1b[38;5;86m back >"
+        controls = "\x1b[38;5;86m< \x1b[32m[+/-]\x1b[38;5;86m zoom | \x1b[32m[r]\x1b[38;5;86meload | \x1b[32m[esc/q]\x1b[38;5;86m back >"
         controls_visw = display_width(controls)
         controls_x = term_w - controls_visw - 4
         controls_y = term_h - 1
