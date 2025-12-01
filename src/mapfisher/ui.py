@@ -1,7 +1,10 @@
 import sys
 import shutil
+import json
 from mapfisher.input import read_key
 from mapfisher.geocode import suggest_locations, geocode_location
+
+CONFIG_FILE = "config.json"
 
 BOX_WIDTH = 64
 BOX_HEIGHT = 12
@@ -13,7 +16,7 @@ COLOR_PROMPT = "\x1b[34m"
 
 
 def clear():
-    sys.stdout.write("\x1b[2j\x1b[H")
+    sys.stdout.write("\x1b[2J\x1b[H")
     sys.stdout.flush()
 
 def get_terminal_size():
@@ -25,7 +28,7 @@ class SettingsUI:
             {"name": "precip", "label": "Distance Units"   , "states": ["mm", "inch"], "value": config["units_precip"]},
             {"name": "temp"  , "label": "Temperature Units", "states": ["°C", "°F"  ], "value": config["units_temp"]},
             {"name": "search", "label": "Search Locations" , "states": None          , "value": None},
-            {"name": "quit"  , "label": "Quit..."          , "states": None          , "value": None},
+            {"name": "quit"  , "label": "Quit"             , "states": None          , "value": None},
         ]
         self.current_option = 0
         self.search_mode = False
@@ -132,6 +135,7 @@ class SettingsUI:
         self.selected_sugg = 0
         
 def draw_box(lines):
+    clear()
     term_width, term_height = get_terminal_size()
     start_x = (term_width - BOX_WIDTH) // 2
     start_y = (term_height - BOX_HEIGHT) // 2
@@ -140,11 +144,18 @@ def draw_box(lines):
     
     sys.stdout.write("╭" + "─" * (BOX_WIDTH - 2) + "╮\n")
     
+    ln = 0
     for line in lines:
+        ln += 1
         padded = line.center(BOX_WIDTH - 2)
+        sys.stdout.write(f"\x1b[{start_y + ln};{start_x}H")
         sys.stdout.write("│" + padded + "│")
         
     for _ in range(BOX_HEIGHT - 2 - len(lines)):
         sys.stdout.write("│" + " " * (BOX_WIDTH - 2) + "│\n")
     
     sys.stdout.write("╰" + "─" * (BOX_WIDTH - 2) + "╯\n")
+    
+def save_config(config):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f)
