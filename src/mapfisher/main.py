@@ -1,19 +1,30 @@
 # Main entry point
-from mapfisher.map import render_map
-import random
+import sys
+import readline
+import json
+import os
+from mapfisher.ui import SettingsUI
+from mapfisher.geocode import location_completer, geocode_location
 
-# lat, lon = random.uniform(-50, 50), random.uniform(-180, 180)
-# lat, lon = 35.980056, 139.752389
-lat, lon = 43.56959052514097, -79.56972908588058
-# lat, lon = 44.000000, -77.000000
+CONFIG_FILE = "config.json"
 
-# REPLACE THESE
-# these are the coordinates from that one part in the lucky star op
-# also should be challenging to render because japan
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r") as f:
+            return json.load(f)
+    return {
+        "units_precip": "mm",
+        "units_temp": "°C",
+        "last_location": None
+    }
 
+def save_config(config):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f)
+        
 def entry():
-    for i in range(10, 21):
-        render_map(lat, lon, zoom = i, debug=False)
+    config = load_config()
+    # etc
 
 if __name__ == "__main__":
     entry()
