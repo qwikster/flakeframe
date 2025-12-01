@@ -1,6 +1,4 @@
 # Main entry point
-import sys
-import readline
 import json
 import os
 from mapfisher.ui import SettingsUI
