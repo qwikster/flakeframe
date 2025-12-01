@@ -2,7 +2,7 @@
 import json
 import os
 from mapfisher.ui import SettingsUI
-from mapfisher.map import render_map
+from mapfisher.mapview import MapViewUI
 
 CONFIG_FILE = "config.json" # TODO: check if distributors break this
 
@@ -27,9 +27,8 @@ def entry():
     # readline.set_completer(location_completer)
     # readline.parse_and_bind("tab: complete")
     
-    ui = SettingsUI(config)
-    
     while True:
+        ui = SettingsUI(config)
         result = ui.run()
         if result == "quit":
             break
@@ -40,11 +39,8 @@ def entry():
                 "lon": lon
             }
             save_config(config)
-            break
-            # TODO: weather parser go here
-    data = render_map(lat, lon, debug = False)
-    print(data)
-    input()
+            mapview = MapViewUI(lat, lon, config)
+            mapview.run()
 
 if __name__ == "__main__":
     entry()

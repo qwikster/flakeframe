@@ -11,7 +11,7 @@ def display_width(s):
     s = re.sub(r'\x1b\[[0-9;]*m', '', s)
     return len(s)
 
-def draw_weather_box(start_y, start_x, lines, box_w):
+def draw_weather_box(start_y, start_x, lines, box_w): # REVISE
     pass
 
 class MapViewUI:
@@ -55,8 +55,14 @@ class MapViewUI:
             if key in ("+", "="):
                 self.zoom = min(18, self.zoom + 1)
                 self.refresh_map()
-            elif key in ...:
-                pass
+            elif key == "-":
+                self.zoom = max(1, self.zoom - 1)
+                self.refresh_map()
+            elif key == "r":
+                self.weather_data = ... # WEATHER
+                self.draw_ui()
+            elif key in ("esc", "q"):
+                return
             
     def refresh_map(self):
         self.show_loading()
