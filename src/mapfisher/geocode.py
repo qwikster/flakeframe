@@ -97,3 +97,9 @@ def suggest_locations(text):
     except Exception:
         pass
     return []
+
+def location_completer(text, state):
+    suggestions = suggest_locations(text)
+    if state < len(suggestions):
+        return suggestions[state]
+    return None
