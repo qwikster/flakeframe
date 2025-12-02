@@ -17,3 +17,13 @@
 │ Fri  ┆ etc                           │
 │ Sat  ┆ etc                           │
 ╰──────┴───────────────────────────────╯
+
+todo:
+location w/ nominatim
+actual unit selection
+improve demo
+"transparent" background
+alternate widget locations
+lite mode
+better main menu
+better persistence

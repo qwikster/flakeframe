@@ -40,7 +40,7 @@ class SettingsUI:
     def draw_ui(self):
         clear()
         lines = [
-            "Settings",
+            "flakeframe | setup",
             ""
         ]
         
