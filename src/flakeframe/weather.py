@@ -117,7 +117,7 @@ def parse_weather(data, config) -> Optional[WeatherData]:
                 condition =            condition(daily["weather_code"][i]),
                 precipitation_sum_mm = daily["precipitation_sum"][i]
             ))
-            
+        
         return WeatherData(
             latitude =     round(data.get("latitude", 0), 2),
             longitude =    round(data.get("longitude", 0), 2),
@@ -149,6 +149,7 @@ def fetch_weather(lat, lon, config):
         "timezone": "auto",
     }
     response = requests.get(url, params = params)
+    
     if response.status_code == 200:
         return parse_weather(response.json(), config)
     return None

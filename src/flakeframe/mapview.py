@@ -1,7 +1,7 @@
 import sys
 import shutil
 import re
-import datetime
+from datetime import date, datetime, time
 from flakeframe.input import read_key
 from flakeframe.map import render_map
 from flakeframe.ui import clear, get_terminal_size
@@ -11,9 +11,6 @@ def display_width(s):
     # regex by ai
     s = re.sub(r'\x1b\[[0-9;]*m', '', s)
     return len(s)
-
-def draw_weather_box(start_y, start_x, lines, box_w): # REVISE
-    pass
 
 class MapViewUI:
     def __init__(self, lat, lon, config):
@@ -56,8 +53,11 @@ class MapViewUI:
         sys.stdout.write(f"\x1b[{box_y + 4};{box_x}H ├──────┴────────────┬──────────────────┤ ")
         sys.stdout.write(f"\x1b[{box_y + 5};{box_x}H │ {self.weather_data.current.wind_direction_deg:>3}° ({self.weather_data.current.wind_direction_str}) {self.weather_data.current.wind_speed_kmh:>4.0f}km/h │ {f"{self.weather_data.current.precipitation_mm:<.0f}mm precip":16} │ ")
         sys.stdout.write(f"\x1b[{box_y + 6};{box_x}H ╞══════╤════════════╧══════════════════╡ ")
+        
         for i in range(5):
-            h = self.weather_data.hourly[i+1]
+            current_time = datetime.now().hour
+            
+            h = self.weather_data.hourly[current_time + i + 1]
             h_time = h.time.strftime("%I%p").lower()
             h_tempcol = "\x1b[0;38;2;255;100;0m" if h.temperature > 0 else "\x1b[0;38;2;0;128;255m"
             h_temp = f"{h_tempcol}{int(h.temperature):3}°{rsc}"
