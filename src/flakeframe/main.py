@@ -1,27 +1,29 @@
 # Main entry point
 import json
 import os
+from configparser import ConfigParser
 from flakeframe.ui import SettingsUI
 from flakeframe.mapview import MapViewUI
 
-CONFIG_FILE = "config.json" # TODO: check if distributors break this
+CONFIG_FILE = "flakeframe.json" # TODO: check if distributors break this
 
-def load_config():
+def load_config(config):
     if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r") as f:
-            return json.load(f)
-    return {
-        "units_precip": "mm",
-        "units_temp": "°C",
-        "last_location": None
-    }
+        config.read(CONFIG_FILE)
+
+    else:
+        config["DEFAULT"]["units_precip"] = "mm"
+        config["DEFAULT"]["units_temp"] = "°C"
+        # config["DEFAULT"]["last_location"] = None
 
 def save_config(config):
-    with open(CONFIG_FILE, "w") as f:
-        json.dump(config, f)
+    # if os.path.exists(os.getcwd() / CONFIG_FILE):
+    with open(CONFIG_FILE, "w") as configfile:
+        config.write(configfile)
         
 def entry():
-    config = load_config()
+    config = ConfigParser()
+    load_config(config)
     
     # fallback
     # readline.set_completer(location_completer)
@@ -30,14 +32,12 @@ def entry():
     while True:
         ui = SettingsUI(config)
         result = ui.run()
+        
         if result == "quit":
             break
         elif result and isinstance(result, tuple):
             lat, lon = result
-            config["last_location"] = {
-                "lat": lat,
-                "lon": lon
-            }
+            #config["DEFAULT"]["last_location"] = { "lat": lat, "lon": lon }
             save_config(config)
             mapview = MapViewUI(lat, lon, config)
             mapview.run()

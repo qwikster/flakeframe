@@ -19,7 +19,8 @@
 ╰──────┴───────────────────────────────╯
 
 todo:
-location w/ nominatim
+debug the uhhhhhh settings menu
+
 actual unit selection
 improve demo
 "transparent" background

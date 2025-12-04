@@ -124,8 +124,8 @@ def parse_weather(data, config) -> Optional[WeatherData]:
             current =      current_weather,
             hourly =       hourly_list,
             daily =        daily_list,
-            units_temp =   config["units_temp"],
-            units_precip = config["units_precip"]
+            units_temp =   config["DEFAULT"]["units_temp"],
+            units_precip = config["DEFAULT"]["units_precip"]
         )
     
     except (KeyError, IndexError, ValueError) as e:
@@ -134,8 +134,8 @@ def parse_weather(data, config) -> Optional[WeatherData]:
         
 
 def fetch_weather(lat, lon, config):
-    temp_unit   = "celsius" if config["units_temp"]   == "°C" else "fahrenheit"
-    precip_unit = "mm"      if config["units_precip"] == "mm" else "inch"
+    temp_unit   = "celsius" if config["DEFAULT"]["units_temp"]   == "°C" else "fahrenheit"
+    precip_unit = "mm"      if config["DEFAULT"]["units_precip"] == "mm" else "inch"
     
     url = "https://api.open-meteo.com/v1/forecast"
     params = {

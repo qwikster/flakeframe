@@ -4,7 +4,7 @@ import json
 from flakeframe.input import read_key
 from flakeframe.geocode import validate_input_live, parse_coordinates
 
-CONFIG_FILE = "config.json"
+CONFIG_FILE = "flakeframe.json"
 
 BOX_WIDTH = 64
 BOX_HEIGHT = 12
@@ -25,8 +25,8 @@ def get_terminal_size():
 class SettingsUI:
     def __init__(self, config):
         self.options = [
-            {"name": "precip", "label": "Distance Units"   , "states": ["mm", "inch"], "value": config["units_precip"]},
-            {"name": "temp"  , "label": "Temperature Units", "states": ["°C", "°F"  ], "value": config["units_temp"]},
+            {"name": "units_precip", "label": "Distance Units"   , "states": ["mm", "inch"], "value": config["DEFAULT"]["units_precip"]},
+            {"name": "units_temp"  , "label": "Temperature Units", "states": ["°C", "°F"  ], "value": config["DEFAULT"]["units_temp"]},
             {"name": "search", "label": "Search Locations" , "states": None          , "value": None},
             {"name": "quit"  , "label": "Quit"             , "states": None          , "value": None},
         ]
@@ -123,7 +123,7 @@ class SettingsUI:
             idx = opt["states"].index(opt["value"])
             new_idx = (idx + direction) % len(opt["states"])
             opt["value"] = opt["states"][new_idx]
-            self.config[opt["name"]] = opt["value"]
+            self.config["DEFAULT"][opt["name"]] = opt["value"]
             save_config(self.config) # noqa - from MAIN.PY
         
 def draw_box(lines):
@@ -150,4 +150,4 @@ def draw_box(lines):
     
 def save_config(config):
     with open(CONFIG_FILE, "w") as f:
-        json.dump(config, f)
+        config.write(f)
