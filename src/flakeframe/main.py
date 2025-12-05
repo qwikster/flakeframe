@@ -34,6 +34,7 @@ def entry():
         ui = SettingsUI(config)
         result = ui.run()
         
+        
         if result == "quit":
             break
         elif result and isinstance(result, tuple):
