@@ -29,9 +29,6 @@ def entry():
     load_config(config)
     themes = ThemeHandler()
     themes.load_themefile(THEME_FILE)
-    for key in themes.storage["default"]:
-        print(key)
-    input()
     
     # fallback
     # readline.set_completer(location_completer)
