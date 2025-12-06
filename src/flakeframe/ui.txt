@@ -27,3 +27,5 @@ lite mode
 better main menu
 
 note to self: brain hurty :thumbup:
+
+FIX: some condition codes are too long for daily

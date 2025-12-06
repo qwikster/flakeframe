@@ -51,14 +51,20 @@ class ThemeHandler:
 
         self.storage = configparser.ConfigParser() # CLEAR
         self.storage.read(self.themefile)
+        self.current = self.storage["DEFAULT"]["current_theme"]
+        
         for th in self.storage.sections():
-            if th == "DEFAULT":
-                self.current = self.storage["DEFAULT"]["current_theme"]
-                continue
+            assetlist = []
             for i in self.storage[th]:
-                print(self.storage[th][i])
-            input() # WORK ON PARSING LOGIC FOR LOAD FROM FILE
-     
+                if i not in ["name", "author", "current_theme"]:
+                    data = self.storage[th][i].split(", ")
+                    assetlist.append(Asset(name = i, r = data[0], g = data[1], b = data[2], fg = data[3]))
+            
+            self.themes.append(Theme(
+                name = self.storage[th]["name"],
+                author = self.storage[th]["author"],
+                assets = assetlist
+            ))
     
     def new_theme(self, theme):
         self.themes.append(Theme)
@@ -80,4 +86,5 @@ class ThemeHandler:
             self.create_themefile(path)
         self.load()
         print("work")
+        print(self.themes)
         input()
