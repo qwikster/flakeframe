@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import List, Optional
 from flakeframe.input import read_key
-from flakeframe.ui import display_width, display_center, get_terminal_size, goto
+from flakeframe.ui import display_width, display_center, get_terminal_size, goto, clear
 
 @dataclass
 class Asset:
@@ -118,16 +118,48 @@ class ThemeUI:
         self.handler = handler
         self.current = handler.current
     
-    def run_menu(self):
+    def run_menu_old(self):
         while(True):
-            rows, cols = get_terminal_size()
-            action = read_key()
+            clear()
+            width, height = get_terminal_size()
+            # action = read_key()
             
-            box_h = 10 # TODO: set dynamically
+            box_h = 10
             box_w = 32
             
-            box_x = cols - box_w
-            box_y = rows - box_h
-            
+            box_x = (width - box_w) // 2
+            box_y = (height - box_h) // 2
+
             goto(box_x, box_y)
-            print("action", action)
+            sys.stdout.write("╭" + "─" * box_w + "╮")
+            goto(box_x, box_y + 1)
+            sys.stdout.write("│" + "Themes".center(box_w) + "│")
+            goto(box_x, box_y + 2)
+            sys.stdout.write("├" + "─" * box_w + "┤")
+            
+            i = 0
+            for th in self.handler.get_themes():
+                # col = self.handler.get_termcol(th.) # TODO: write logic to get attributes easier
+                goto(box_x, box_y + 3 + i)
+                sys.stdout.write("│" + th.name.center(box_w) + "│")
+                i += 1
+                
+            i += 3
+            goto(box_x, box_y + i)
+            sys.stdout.write("├" + "─" * box_w + "┤")
+            goto(box_x, box_y + i + 1)
+            sys.stdout.write("│" + "[q]uit".center(box_w) + "│")
+                
+            sys.stdout.flush()
+            input()
+            
+    def run_menu(self):
+        while(True):
+            clear()
+            width, height = get_terminal_size()
+            
+            box_h = 10
+            box_w = 32
+            
+            action = read_key()
+            sys.stdout.flush()

@@ -36,6 +36,7 @@ def get_terminal_size():
 
 def goto(x, y): # dont worry its not that goto
     sys.stdout.write(f"\x1b[{y};{x}H")
+    sys.stdout.flush()
 
 class SettingsUI:
     def __init__(self, config):
